@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="UMCine 회원 정보와 평점 API를 실제 화면에서 확인하는 연동 대시보드"
+    />
+    <title>UMCine API Studio</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%234f46e5%22/><path d=%22M9 9h4v9a3 3 0 0 0 6 0V9h4v9a7 7 0 0 1-14 0Z%22 fill=%22white%22/></svg>" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="UMCine API Studio 홈">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>UMCINE</span>
+        <small>API STUDIO</small>
+      </a>
+
+      <nav class="topbar-nav" aria-label="페이지 메뉴">
+        <a href="#member-check">회원 정보 확인</a>
+        <a href="#ratings">평점 조회</a>
+      </nav>
+
+      <div class="server-chip" title="연결 대상 서버">
+        <span class="server-dot" aria-hidden="true"></span>
+        <span>Spring Boot</span>
+        <code>:8080</code>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <span class="eyebrow">WEEK 5 · FRONTEND INTEGRATION</span>
+          <h1 id="hero-title">API가 실제 화면에서<br />동작하는 순간을 확인하세요.</h1>
+          <p>
+            회원 정보 중복 여부를 확인하고, 사용자가 남긴 영화 평점을 한눈에 조회할 수 있는
+            연동 대시보드입니다.
+          </p>
+          <a class="hero-action" href="#member-check">
+            API 테스트 시작
+            <span aria-hidden="true">↘</span>
+          </a>
+        </div>
+
+        <div class="hero-preview" aria-label="연동 API 요약">
+          <div class="preview-toolbar">
+            <span class="preview-dot"></span>
+            <span class="preview-dot"></span>
+            <span class="preview-dot"></span>
+            <code>localhost:8080</code>
+          </div>
+          <div class="preview-body">
+            <div class="preview-route">
+              <span class="method-badge">GET</span>
+              <code>/members/nickname/{nickname}</code>
+              <strong>200</strong>
+            </div>
+            <div class="preview-route">
+              <span class="method-badge">GET</span>
+              <code>/members/email/{email}</code>
+              <strong>200</strong>
+            </div>
+            <div class="preview-route">
+              <span class="method-badge">GET</span>
+              <code>/members/{memberId}/ratings</code>
+              <strong>200</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="member-check" aria-labelledby="member-check-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">01</span>
+            <h2 id="member-check-title">회원 정보 중복 확인</h2>
+          </div>
+          <p>가입 전에 닉네임과 이메일을 사용할 수 있는지 실시간으로 확인합니다.</p>
+        </div>
+
+        <div class="check-grid">
+          <article class="panel check-panel">
+            <div class="panel-heading">
+              <span class="panel-icon panel-icon--nickname" aria-hidden="true">N</span>
+              <div>
+                <h3>닉네임 확인</h3>
+                <code>GET /members/nickname/{nickname}</code>
+              </div>
+            </div>
+
+            <form id="nickname-form" novalidate>
+              <label for="nickname">사용할 닉네임</label>
+              <div class="input-action">
+                <input
+                  id="nickname"
+                  name="nickname"
+                  type="text"
+                  maxlength="50"
+                  placeholder="예: movie_lover"
+                  autocomplete="nickname"
+                  required
+                />
+                <button type="submit">중복 확인</button>
+              </div>
+              <p class="field-help">50자 이하의 닉네임을 입력해 주세요.</p>
+            </form>
+
+            <div class="result-message result-message--idle" id="nickname-result" aria-live="polite">
+              <span class="result-icon" aria-hidden="true">?</span>
+              <div>
+                <strong>확인할 닉네임을 입력해 주세요.</strong>
+                <p>조회 결과가 이곳에 표시됩니다.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel check-panel">
+            <div class="panel-heading">
+              <span class="panel-icon panel-icon--email" aria-hidden="true">@</span>
+              <div>
+                <h3>이메일 확인</h3>
+                <code>GET /members/email/{email}</code>
+              </div>
+            </div>
+
+            <form id="email-form" novalidate>
+              <label for="email">사용할 이메일</label>
+              <div class="input-action">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  maxlength="254"
+                  placeholder="example@umc.com"
+                  autocomplete="email"
+                  required
+                />
+                <button type="submit">중복 확인</button>
+              </div>
+              <p class="field-help">로그인에 사용할 이메일 형식으로 입력해 주세요.</p>
+            </form>
+
+            <div class="result-message result-message--idle" id="email-result" aria-live="polite">
+              <span class="result-icon" aria-hidden="true">?</span>
+              <div>
+                <strong>확인할 이메일을 입력해 주세요.</strong>
+                <p>조회 결과가 이곳에 표시됩니다.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section--ratings" id="ratings" aria-labelledby="ratings-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">02</span>
+            <h2 id="ratings-title">회원별 영화 평점</h2>
+          </div>
+          <p>회원 ID로 작성한 평점과 후기를 최신순으로 불러옵니다.</p>
+        </div>
+
+        <div class="ratings-layout">
+          <article class="panel ratings-panel">
+            <form class="member-search" id="ratings-form" novalidate>
+              <div>
+                <label for="member-id">조회할 회원 ID</label>
+                <p>데이터베이스에 저장된 회원 번호를 입력하세요.</p>
+              </div>
+              <div class="input-action input-action--member">
+                <input
+                  id="member-id"
+                  name="memberId"
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  step="1"
+                  placeholder="예: 1"
+                  required
+                />
+                <button type="submit">평점 불러오기</button>
+              </div>
+            </form>
+
+            <div class="ratings-feedback" id="ratings-feedback" aria-live="polite"></div>
+
+            <div class="rating-summary" id="rating-summary" hidden>
+              <div>
+                <span>작성한 평점</span>
+                <strong id="rating-count">0개</strong>
+              </div>
+              <div>
+                <span>평균 별점</span>
+                <strong id="rating-average">0.0</strong>
+              </div>
+              <div>
+                <span>최근 활동</span>
+                <strong id="rating-latest">-</strong>
+              </div>
+            </div>
+
+            <div class="rating-list" id="rating-list">
+              <div class="empty-state">
+                <span class="empty-state-icon" aria-hidden="true">★</span>
+                <h3>아직 조회한 평점이 없어요.</h3>
+                <p>회원 ID를 입력하면 영화 평점과 후기가 이곳에 표시됩니다.</p>
+              </div>
+            </div>
+          </article>
+
+          <aside class="panel activity-panel" aria-labelledby="activity-title">
+            <div class="activity-heading">
+              <div>
+                <span class="activity-pulse" aria-hidden="true"></span>
+                <h3 id="activity-title">요청 기록</h3>
+              </div>
+              <button id="clear-log" type="button">기록 지우기</button>
+            </div>
+
+            <div class="activity-empty" id="activity-empty">
+              API 요청을 보내면 상태와 소요 시간이 기록됩니다.
+            </div>
+            <ol class="activity-list" id="activity-list"></ol>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-brand">
+        <span class="brand-mark brand-mark--small" aria-hidden="true"><span></span></span>
+        <strong>UMCINE API STUDIO</strong>
+      </div>
+      <p>UMC 11th · Spring Boot API Integration Lab</p>
+    </footer>
+  </body>
+</html>
