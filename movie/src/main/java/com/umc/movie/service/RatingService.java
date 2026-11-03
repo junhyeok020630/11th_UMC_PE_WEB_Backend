@@ -60,6 +60,7 @@ public class RatingService {
     @Transactional
     public void update(Long ratingId, Long memberId, UpdateRatingRequest request) {
         Rating rating = findOwnedRating(ratingId, memberId);
+        rating.update(request.score(), request.comment());
     }
     @Transactional
     public void delete(Long ratingId, Long memberId) {
