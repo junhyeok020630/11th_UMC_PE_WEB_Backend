@@ -3,6 +3,7 @@ package com.umc.movie.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +27,9 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, unique = true, length = 50)
     private String nickname;
 
+    // src/main/java/com/umc/movie/entity/Member.java 의 생성자에 붙입니다
+    // import lombok.Builder; 도 함께 추가해주세요
+    @Builder
     public Member(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
