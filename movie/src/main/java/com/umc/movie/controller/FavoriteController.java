@@ -8,6 +8,7 @@ import com.umc.movie.dto.FavoriteStatusResponse;
 import com.umc.movie.interceptor.AuthInterceptor;
 import com.umc.movie.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -80,6 +81,16 @@ public class FavoriteController {
                 .body(ApiResponse.created("즐겨찾기를 등록했습니다.", response));
     }
 
+    @Operation(
+            summary = "내 즐겨찾기 목록 조회",
+            description = "토큰의 회원이 등록한 즐겨찾기 목록을 최신 등록 순서로 조회합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200", description = "즐겨찾기 목록 조회 성공 (COMMON200)"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401", description = "로그인 필요 (AUTH401_2)")
+    })
     @GetMapping("/favorites")
     public ResponseEntity<ApiResponse<List<FavoriteResponse>>> getMyFavorites(
             @RequestAttribute(AuthInterceptor.MEMBER_ID) Long memberId
@@ -88,18 +99,42 @@ public class FavoriteController {
         return ResponseEntity.ok(ApiResponse.ok("내 즐겨찾기 목록을 조회했습니다.", response));
     }
 
+    @Operation(
+            summary = "즐겨찾기 여부 조회",
+            description = "토큰의 회원이 해당 영화를 즐겨찾기했는지 조회합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200", description = "즐겨찾기 여부 조회 성공 (COMMON200)"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401", description = "로그인 필요 (AUTH401_2)")
+    })
     @GetMapping("/favorites/{movieId}")
     public ResponseEntity<ApiResponse<FavoriteStatusResponse>> getStatus(
             @RequestAttribute(AuthInterceptor.MEMBER_ID) Long memberId,
+            @Parameter(description = "조회할 TMDB 영화 ID", example = "550")
             @PathVariable Long movieId
     ) {
         FavoriteStatusResponse response = favoriteService.getStatus(memberId, movieId);
         return ResponseEntity.ok(ApiResponse.ok("즐겨찾기 여부를 조회했습니다.", response));
     }
 
+    @Operation(
+            summary = "즐겨찾기 해제",
+            description = "토큰의 회원이 해당 영화의 즐겨찾기를 해제합니다."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200", description = "즐겨찾기 해제 성공 (COMMON200)"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401", description = "로그인 필요 (AUTH401_2)"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404", description = "즐겨찾기를 찾을 수 없음 (FAVORITE404_1)")
+    })
     @DeleteMapping("/favorites/{movieId}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @RequestAttribute(AuthInterceptor.MEMBER_ID) Long memberId,
+            @Parameter(description = "해제할 TMDB 영화 ID", example = "550")
             @PathVariable Long movieId
     ) {
         favoriteService.delete(memberId, movieId);
