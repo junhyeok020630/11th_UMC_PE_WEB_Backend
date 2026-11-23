@@ -30,6 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 // 로그인 없이도 써야 하는 경로만 예외로 열어줍니다
                 .excludePathPatterns(
+                        "/health", // ALB 헬스 체크
                         "/auth/**", // 로그인
                         "/members", // 회원가입 (POST /members)
                         "/members/nickname/**", // 닉네임 중복 체크
